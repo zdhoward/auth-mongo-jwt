@@ -15,11 +15,14 @@ mongoose.connect(
 
 //////// CREATE APP ////////
 const app = express();
+app.set('view engine', 'ejs');
 
 //////// IMPORT ROUTES ////////
 const authRoutes = require("./routes/auth");
 const dashboardRoutes = require("./routes/dashboard");
 const verifyToken = require("./routes/validate-token");
+
+const debugRoutes = require("./routes/debug");
 
 //////// MIDDLEWARES ////////
 app.use(express.json()); // for body parser
@@ -27,6 +30,7 @@ app.use(express.json()); // for body parser
 //////// ROUTE MIDDLEWARES ////////
 app.use("/api/user", authRoutes);
 app.use("/api/dashboard", verifyToken, dashboardRoutes);
+app.use("/debug", debugRoutes);
 
 //////// POST ////////
 

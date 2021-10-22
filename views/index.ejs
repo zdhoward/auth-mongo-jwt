@@ -1,0 +1,31 @@
+<html>
+
+<head>
+    <title>Home</title>
+</head>
+
+<body>
+    <h1>Home</h1>
+    <br />
+    <% if (locals.user) { %>
+        <h3>
+            <%= locals.user %>
+        </h3>
+        <% } %>
+            <br />
+            <a href='/debug/register'>REGISTER</a>
+            |
+            <a href='/debug/login'>LOGIN</a>
+            |
+            <a href='/debug/logout'>LOGOUT</a>
+            <hr />
+            <a href='/debug/authreq'>AUTH REQUIRED</a>
+            <hr />
+            <% if (locals.info) { %>
+                <h3>
+                    <%= locals.info %>
+                </h3>
+                <% } %>
+</body>
+
+</html>
