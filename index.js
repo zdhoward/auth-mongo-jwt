@@ -7,6 +7,28 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const crypto = require("crypto");
 
+//////// EXTEND EXPRESS REQUESTS ////////
+const jwt = require("jsonwebtoken");
+express.request.helloworld = function () {
+    console.log("HELLO WORLD");
+};
+
+express.request.isAuthenticated = function () {
+    if (this.session.token) {
+        //console.log(req.session.token);
+        return !!jwt.verify(this.session.token, process.env.TOKEN_SECRET);
+        //onsole.log(decoded);
+    }
+};
+
+express.request.getTokenData = function () {
+    if (this.session.token) {
+        return jwt.verify(this.session.token, process.env.TOKEN_SECRET);
+    } else {
+        return {};
+    }
+};
+
 //////// CONNECT DB ////////
 mongoose.connect(
     process.env.DB_CONNECT,
@@ -33,7 +55,7 @@ app.use(session({
     genid: (req) => { return crypto.randomUUID(); },
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUnintialized: true,
+    saveUninitialized: true,
     unset: 'destroy',
     store: MongoStore.create({
         mongoUrl: process.env.DB_CONNECT,
@@ -45,6 +67,7 @@ app.use(session({
 
 //////// MIDDLEWARES ////////
 app.use(express.json()); // for body parser
+app.use(express.urlencoded({ extended: true }));
 
 //////// ROUTE MIDDLEWARES ////////
 app.use("/api/user", authRoutes);
