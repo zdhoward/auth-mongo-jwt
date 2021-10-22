@@ -3,6 +3,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config({ path: __dirname + '/.env' })
 
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+const crypto = require("crypto");
+
 //////// CONNECT DB ////////
 mongoose.connect(
     process.env.DB_CONNECT,
@@ -23,6 +27,21 @@ const dashboardRoutes = require("./routes/dashboard");
 const verifyToken = require("./routes/validate-token");
 
 const debugRoutes = require("./routes/debug");
+
+//////// SESSIONS ////////
+app.use(session({
+    genid: (req) => { return crypto.randomUUID(); },
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUnintialized: true,
+    unset: 'destroy',
+    store: MongoStore.create({
+        mongoUrl: process.env.DB_CONNECT,
+        mongooseConnection: mongoose.connection,
+        ttl: 30 * 60 * 60, // save session for 30 hrs
+        autoRemove: 'native'
+    }),
+}));
 
 //////// MIDDLEWARES ////////
 app.use(express.json()); // for body parser
